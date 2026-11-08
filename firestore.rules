@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Centralized Shared App State (Used by all 5 school accounts across all devices)
+    match /app_state/{stateId} {
+      allow read, write: if true;
+    }
+
+    // 2. Users collection (Max 5 authorized accounts)
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // 3. Security Configuration (PIN hash, lockout limits)
+    match /security_config/{configId} {
+      allow read, write: if true;
+    }
+
+    // 4. Security Audit Logs (Append-only by authorized users)
+    match /security_audit_logs/{logId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+
+    // 5. Trash Bin (Soft-deleted records)
+    match /trash_bin/{trashId} {
+      allow read, write: if true;
+    }
+  }
+}
+

@@ -1,0 +1,6 @@
+{
+  "name": "e-Đội THCS Đường Hồng | Trợ lý Số TPT Đội",
+  "description": "Hệ thống Trợ lý Số hóa Công tác Đội TNTP Hồ Chí Minh - Liên đội Trường PTDTBT THCS Đường Hồng (Tuyên Quang), năm học 2026-2027. Quản lý 17 Chi đội, thi đua tuần, hồ sơ số hóa, nề nếp bán trú.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

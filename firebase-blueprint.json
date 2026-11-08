@@ -1,0 +1,118 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authorized user account (maximum 5 accounts total in the system)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["ADMIN", "MANAGER", "TEACHER"] },
+        "assignedScope": { "type": "string", "description": "Scope of authority e.g. 'Toàn trường', 'Phân hiệu', 'Chi đội 9A'" },
+        "status": { "type": "string", "enum": ["ACTIVE", "LOCKED"] },
+        "createdAt": { "type": "string" },
+        "lastLoginAt": { "type": "string" }
+      },
+      "required": ["id", "email", "role", "status"]
+    },
+    "SecurityConfig": {
+      "title": "SecurityConfig",
+      "description": "System security configuration including 6-digit PIN hash and protection flags",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "pinHash": { "type": "string", "description": "SHA-256 hashed 6-digit PIN" },
+        "pinSalt": { "type": "string" },
+        "maxFailedAttempts": { "type": "number" },
+        "lockoutDurationMinutes": { "type": "number" },
+        "requirePinForBatchDelete": { "type": "boolean" },
+        "requirePinForRestore": { "type": "boolean" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id", "pinHash"]
+    },
+    "SecurityAuditLog": {
+      "title": "SecurityAuditLog",
+      "description": "Audit trail log for all administrative, auth, and data-modifying events",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "actorEmail": { "type": "string" },
+        "actorRole": { "type": "string" },
+        "action": { "type": "string" },
+        "targetType": { "type": "string" },
+        "targetId": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "result": { "type": "string", "enum": ["SUCCESS", "FAILED", "BLOCKED"] }
+      },
+      "required": ["id", "actorEmail", "action", "timestamp", "result"]
+    },
+    "TrashItem": {
+      "title": "TrashItem",
+      "description": "Soft-deleted records (students, classes, plans) held in trash bin for recovery",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "itemType": { "type": "string", "enum": ["HOC_SINH", "CHI_DOI", "KE_HOACH", "HO_SO", "THI_DUA"] },
+        "itemId": { "type": "string" },
+        "itemTitle": { "type": "string" },
+        "itemData": { "type": "object" },
+        "deletedBy": { "type": "string" },
+        "deletedAt": { "type": "string" },
+        "reason": { "type": "string" },
+        "canRestore": { "type": "boolean" }
+      },
+      "required": ["id", "itemType", "itemId", "itemTitle", "deletedBy", "deletedAt"]
+    },
+    "SharedAppState": {
+      "title": "SharedAppState",
+      "description": "Centralized shared school database state synchronized between campus and branch",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolConfig": { "type": "object" },
+        "classesData": { "type": "object" },
+        "listHocSinh": { "type": "array" },
+        "listChiTieu": { "type": "array" },
+        "weeklyScores": { "type": "object" },
+        "listSuViec": { "type": "array" },
+        "listThongBao": { "type": "array" },
+        "listCoDo": { "type": "array" },
+        "listLichCongTac": { "type": "array" },
+        "listTieuChi": { "type": "array" },
+        "hoSoGroups": { "type": "array" },
+        "renLuyenState": { "type": "object" },
+        "listHoSoChiDoi": { "type": "array" },
+        "lastSyncedAt": { "type": "string" },
+        "lastSyncedBy": { "type": "string" },
+        "version": { "type": "number" }
+      },
+      "required": ["id", "lastSyncedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Authorized user accounts (max 5)"
+    },
+    "/security_config/{configId}": {
+      "schema": { "$ref": "#/entities/SecurityConfig" },
+      "description": "System security and 6-digit PIN settings"
+    },
+    "/security_audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/SecurityAuditLog" },
+      "description": "Audit log events"
+    },
+    "/trash_bin/{trashId}": {
+      "schema": { "$ref": "#/entities/TrashItem" },
+      "description": "Soft-deleted items awaiting recovery or permanent deletion"
+    },
+    "/app_state/{stateId}": {
+      "schema": { "$ref": "#/entities/SharedAppState" },
+      "description": "Realtime synchronized school state for THCS Đường Hồng"
+    }
+  }
+}
